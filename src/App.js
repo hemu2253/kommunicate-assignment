@@ -1,0 +1,80 @@
+import React from 'react';
+import './App.scss';
+import Table from './components/Table';
+import Pagination from './components/Pagination';
+import SearchInput from './components/SearchInput';
+import { debounce } from "lodash";
+
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      per_page: 3,
+      current_page: 1,
+      masterUsersData: [],
+      usersData: [],
+      searchValue: '',
+      total_pages: 0,
+    }
+  }
+
+  componentDidMount() {
+    this.makeAPIReq();
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.current_page !== this.state.current_page) {
+      this.makeAPIReq();
+    }
+  }
+
+  makeAPIReq = () => {
+    const { current_page, per_page } = this.state;
+    fetch(`https://reqres.in/api/users?page=${current_page}&per_page=${per_page}`)
+      .then(res => res.json())
+      .then(result => this.setState({ usersData: result.data, masterUsersData: result.data, total_pages: result.total_pages }));
+  }
+
+  filterUsers = debounce(val => {
+    console.log(val)
+    const { masterUsersData } = this.state;
+    const localUsersData = [...masterUsersData];
+    const filteredArray = localUsersData.filter(user => (user.first_name).toLowerCase().includes(val.toLowerCase()) || (user.last_name).toLowerCase().includes(val.toLowerCase()));
+    this.setState({ usersData: filteredArray });
+    if (val === '') {
+      this.makeAPIReq();
+    }
+  }, 1000)
+
+  onSearch = value => {
+    this.filterUsers(value);
+  }
+
+  render() {
+    const { usersData, current_page, total_pages } = this.state;
+
+    if (usersData) {
+      return (
+        <div className="container">
+          <div className="tableParent">
+            <div className="table">
+              <div className="filters">
+                <SearchInput ChangeValue={searchValue => this.onSearch(searchValue)} />
+                <Pagination
+                  total_pages={total_pages}
+                  current_page={current_page}
+                  changePage={current_page => this.setState({ current_page })}
+                />
+              </div>
+              <Table usersData={usersData} />
+            </div>
+          </div>
+        </div>
+      )
+    }
+    return <div>loading</div>
+  }
+}
+
+export default App;

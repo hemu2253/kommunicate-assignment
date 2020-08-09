@@ -1,0 +1,9 @@
+.inputForm {
+	border: solid 1px #f9f9f9;
+	border-radius: 8px;
+	height: 24px;
+	padding: 5px 10px;
+	&:focus {
+		border: unset;
+	}
+}
