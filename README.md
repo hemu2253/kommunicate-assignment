@@ -1,8 +1,8 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Install Dependencies
 
-In the project directory, you can run:
+CLone and go to project root folder. To install dependencies, run ```npm install```
 
 ### `npm start`
 
